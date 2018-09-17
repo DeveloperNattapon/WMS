@@ -1979,36 +1979,33 @@ Public Class PickingWH
         txtItemNo.Focus()
     End Sub
     Private Sub ReadDataComfrimGoods()
-
+        Dim Site As String
+        Dim CustomerLOTNo_ As String
+        Dim ENDc As String = ""
+        Dim Ow As String = ""
         If rdbSpecific.Checked = True And chkSCRAP.Checked = False Then
             If rdbSpecific.Checked = True Then
-                Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode And c.OwnerPN Equals pd.CustomerPart _
-                  Where c.WHSite = dcbSite.Text.Trim And c.OwnerPN = Owner And c.ProductCode = ProductNo And c.StatusAvailable = "0" And c.Type = "Goods Complete" _
-                  And c.CustomerLOTNo = txtCUL.Value.Trim Order By c.ReceiveDate Ascending _
-                  Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN,
-                 EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
-                If sqlSearchInvoice.Count > 0 Then
-                    dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
-                    dgvReadWHIssuedDetail.DataBind()
-
-                Else
-                    dgvReadWHIssuedDetail.DataSource = Nothing
-                    dgvReadWHIssuedDetail.DataBind()
-                End If
+                Site = dcbSite.Text.Trim
+                CustomerLOTNo_ = txtCUL.Value.Trim()
             Else
-                Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode And c.OwnerPN Equals pd.CustomerPart _
-                Where c.WHSite = dcbSite.Text.Trim And c.OwnerPN = txtOW.Value.Trim And c.ProductCode = ProductNo And c.StatusAvailable = "0" And c.Type = "Goods Complete" _
-                And c.CustomerLOTNo = txtCUL.Value.Trim And c.ENDCustomer = txtENDCustomer.Value.Trim Order By c.ReceiveDate Ascending _
-                Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN,
-               EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
-                If sqlSearchInvoice.Count > 0 Then
-                    dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
-                    dgvReadWHIssuedDetail.DataBind()
+                Site = dcbSite.Text.Trim
+                CustomerLOTNo_ = txtCUL.Value.Trim()
+                ENDc = txtENDCustomer.Value.Trim
+                Ow = txtOW.Value.Trim
+            End If
+            Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode _
+                 And c.OwnerPN Equals pd.CustomerPart Where ((c.WHSite = Site And c.OwnerPN = Owner And c.ProductCode = ProductNo And c.CustomerLOTNo = CustomerLOTNo_) _
+                 Or (c.WHSite = Site And c.OwnerPN = OW And c.ProductCode = ProductNo And c.CustomerLOTNo = CustomerLOTNo_ And c.ENDCustomer = ENDc) _
+                 And c.StatusAvailable = "0" And c.Type = "Goods Complete") Order By c.ReceiveDate Ascending _
+                 Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN, EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
 
-                Else
-                    dgvReadWHIssuedDetail.DataSource = Nothing
-                    dgvReadWHIssuedDetail.DataBind()
-                End If
+            If sqlSearchInvoice.Count > 0 Then
+                dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
+                dgvReadWHIssuedDetail.DataBind()
+
+            Else
+                dgvReadWHIssuedDetail.DataSource = Nothing
+                dgvReadWHIssuedDetail.DataBind()
             End If
 
         ElseIf rdbSpecific.Checked = True And chkSCRAP.Checked = True Then
@@ -2027,34 +2024,24 @@ Public Class PickingWH
             End If
         ElseIf rdbOwner.Checked = True Then
             If rcbFIFO.Checked = True Then
-                Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode And c.OwnerPN Equals pd.CustomerPart _
-            Where c.WHSite = dcbSite.Text.Trim And c.OwnerPN = Owner And c.ProductCode = ProductNo And c.StatusAvailable = "0" And c.Type = "Goods Complete" _
-            Order By c.ReceiveDate Ascending _
-            Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN,
-           EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
-                If sqlSearchInvoice.Count > 0 Then
-                    dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
-                    dgvReadWHIssuedDetail.DataBind()
-
-                Else
-                    dgvReadWHIssuedDetail.DataSource = Nothing
-                    dgvReadWHIssuedDetail.DataBind()
-                End If
+                Site = dcbSite.Text.Trim
             ElseIf rcbLIFO.Checked = True Then
-                Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode And c.OwnerPN Equals pd.CustomerPart _
-            Where c.WHSite = dcbSite.Text.Trim And c.OwnerPN = Owner And c.ProductCode = txtProductCode.Value.Trim And c.StatusAvailable = "0" And c.Type = "Goods Complete" _
-            And c.CustomerLOTNo = txtCUL.Value.Trim And c.ENDCustomer = txtENDCustomer.Value.Trim Order By c.ReceiveDate Descending _
-            Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN,
-           EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
-                If sqlSearchInvoice.Count > 0 Then
-                    dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
-                    dgvReadWHIssuedDetail.DataBind()
-
-                Else
-                    dgvReadWHIssuedDetail.DataSource = Nothing
-                    dgvReadWHIssuedDetail.DataBind()
-                End If
+                Site = dcbSite.Text.Trim
             End If
+            Dim sqlSearchInvoice = (From c In db.tblWHConfirmGoodsReceiveDetails Join pd In db.tblProductDetails On c.ProductCode Equals pd.ProductCode And c.OwnerPN Equals pd.CustomerPart _
+           Where (c.WHSite = Site And c.OwnerPN = Owner And c.ProductCode = ProductNo And c.StatusAvailable = "0" And c.Type = "Goods Complete")
+           Order By c.ReceiveDate Ascending Select c.LOTNo, c.WHSite, c.CustomerLOTNo, c.ItemNo, c.ProductCode, c.CustomerPN, c.OwnerPN, EntryItemNo = Nothing IsNot c.EntryItemNo).ToList
+
+            If sqlSearchInvoice.Count > 0 Then
+                dgvReadWHIssuedDetail.DataSource = sqlSearchInvoice
+                dgvReadWHIssuedDetail.DataBind()
+
+            Else
+                dgvReadWHIssuedDetail.DataSource = Nothing
+                dgvReadWHIssuedDetail.DataBind()
+            End If
+        End If
+            
         End If
         SumQTYCanPick()
     End Sub
